@@ -45,6 +45,7 @@ in
       libtermkey
       libuv
       libvterm-neovim
+      lua.pkgs.luv.libluv
       msgpack
       ncurses
       neovimLuaEnv
@@ -79,6 +80,7 @@ in
     cmakeFlags = [
       "-DLUA_PRG=${neovimLuaEnv.interpreter}"
       "-DGPERF_PRG=${gperf}/bin/gperf"
+      "-DLIBLUV_LIBRARY=${lua.pkgs.luv.libluv}/lib/lua/${lua.luaversion}/libluv.so"
     ]
     ++ optional doCheck "-DBUSTED_PRG=${neovimLuaEnv}/bin/busted"
     ++ optional (!lua.pkgs.isLuaJIT) "-DPREFER_LUA=ON"
