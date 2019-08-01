@@ -13,7 +13,7 @@ with stdenv.lib;
 
 let
   neovimLuaEnv = lua.withPackages(ps:
-    (with ps; [ mpack lpeg luabitop ]
+    (with ps; [ lpeg luabitop mpack ]
     ++ optionals doCheck [
         nvim-client luv coxpcall busted luafilesystem penlight inspect
       ]
@@ -41,14 +41,14 @@ in
     enableParallelBuilding = true;
 
     buildInputs = [
+      gperf
       libtermkey
       libuv
+      libvterm-neovim
       msgpack
       ncurses
-      libvterm-neovim
-      unibilium
-      gperf
       neovimLuaEnv
+      unibilium
     ] ++ optional withJemalloc jemalloc
       ++ optional stdenv.isDarwin libiconv
       ++ optionals doCheck [ glibcLocales procps ]
