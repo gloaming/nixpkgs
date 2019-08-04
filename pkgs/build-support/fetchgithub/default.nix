@@ -1,6 +1,6 @@
 { lib, fetchgit, fetchzip }:
 
-{ owner, repo, rev, name ? "source"
+{ owner, repo, rev, name ? repo + "-source"
 , fetchSubmodules ? false, private ? false
 , githubBase ? "github.com", varPrefix ? null
 , ... # For hash agility
