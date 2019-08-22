@@ -42,6 +42,7 @@ let
     debug = callLibs ./debug.nix;
     generators = callLibs ./generators.nix;
     misc = callLibs ./deprecated.nix;
+    callWithOptions = callLibs ./call-with-options.nix;
 
     # domain-specific
     fetchers = callLibs ./fetchers.nix;
