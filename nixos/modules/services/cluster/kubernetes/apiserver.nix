@@ -318,39 +318,39 @@ in
           before = [ "kube-control-plane-online.target" ];
           serviceConfig = {
             Slice = "kubernetes.slice";
-            ExecStart = callWithOptions "${top.package}/bin/kube-apiserver" [{
+            ExecStart = with cfg; callWithOptions "${top.package}/bin/kube-apiserver" [{
 
-              allow-privileged = boolToString cfg.allowPrivileged;
+              allow-privileged = boolToString allowPrivileged;
 
-              authorization-mode = concatStringsSep "," cfg.authorizationMode;
+              authorization-mode = concatStringsSep "," authorizationMode;
 
-              authorization-policy-file = optional (elem "ABAC" cfg.authorizationMode)
+              authorization-policy-file = optional (elem "ABAC" authorizationMode)
                 (pkgs.writeText "kube-auth-policy.jsonl"
-                  (concatMapStringsSep "\n" builtins.toJSON cfg.authorizationPolicy)
+                  (concatMapStringsSep "\n" builtins.toJSON authorizationPolicy)
                 );
-              authorization-webhook-config-file = optional (elem "Webhook" cfg.authorizationMode) cfg.webhookConfig;
+              authorization-webhook-config-file = optional (elem "Webhook" authorizationMode) webhookConfig;
 
-              inherit (cfg) bindAddress advertiseAddress clientCaFile;
+              inherit bindAddress advertiseAddress clientCaFile;
 
-              disable-admission-plugins = concatStringsSep "," cfg.disableAdmissionPlugins;
-              enable-admission-plugins  = concatStringsSep "," cfg.enableAdmissionPlugins;
+              disable-admission-plugins = concatStringsSep "," disableAdmissionPlugins;
+              enable-admission-plugins  = concatStringsSep "," enableAdmissionPlugins;
 
-              etcd-servers = concatStringsSep "," cfg.etcd.servers;
-              etcd-cafile   = cfg.etcd.caFile;
-              etcd-certfile = cfg.etcd.certFile;
-              etcd-keyfile  = cfg.etcd.keyFile;
+              etcd-servers = concatStringsSep "," etcd.servers;
+              etcd-cafile   = etcd.caFile;
+              etcd-certfile = etcd.certFile;
+              etcd-keyfile  = etcd.keyFile;
 
-              feature-gates = concatMapStringsSep "," (feature: "${feature}=true") cfg.featureGates;
+              feature-gates = concatMapStringsSep "," (feature: "${feature}=true") featureGates;
 
-              inherit (cfg) basicAuthFile;
+              inherit basicAuthFile;
 
-              kubelet-https = boolToString cfg.kubeletHttps;
-              kubelet-certificate-authority = cfg.kubeletClientCaFile;
-              kubelet-client-certificate = cfg.kubeletClientCertFile;
-              kubelet-client-key = cfg.kubeletClientKeyFile;
-              kubelet-preferred-address-types = cfg.preferredAddressTypes;
+              kubelet-https = boolToString kubeletHttps;
+              kubelet-certificate-authority = kubeletClientCaFile;
+              kubelet-client-certificate = kubeletClientCertFile;
+              kubelet-client-key = kubeletClientKeyFile;
+              kubelet-preferred-address-types = preferredAddressTypes;
 
-              inherit (cfg)
+              inherit
                 proxyClientCertFile
                 proxyClientKeyFile
                 insecureBindAddress
@@ -363,13 +363,13 @@ in
                 tlsCertFile
               ;
 
-              tls-private-key-file = cfg.tlsKeyFile;
+              tls-private-key-file = tlsKeyFile;
 
-              inherit (cfg) tokenAuthFile;
+              inherit tokenAuthFile;
 
-              v = cfg.verbosity;
+              v = verbosity;
 
-            } cfg.extraOpts ];
+            } extraOpts ];
             WorkingDirectory = top.dataDir;
             User = "kubernetes";
             Group = "kubernetes";
