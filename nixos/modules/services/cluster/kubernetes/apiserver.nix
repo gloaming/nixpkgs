@@ -319,42 +319,56 @@ in
           serviceConfig = {
             Slice = "kubernetes.slice";
             ExecStart = callWithOptions "${top.package}/bin/kube-apiserver" [{
+
               allow-privileged = boolToString cfg.allowPrivileged;
+
               authorization-mode = concatStringsSep "," cfg.authorizationMode;
+
               authorization-policy-file = optional (elem "ABAC" cfg.authorizationMode)
                 (pkgs.writeText "kube-auth-policy.jsonl"
                   (concatMapStringsSep "\n" builtins.toJSON cfg.authorizationPolicy)
                 );
               authorization-webhook-config-file = optional (elem "Webhook" cfg.authorizationMode) cfg.webhookConfig;
-              bind-address = cfg.bindAddress;
-              advertise-address = cfg.advertiseAddress;
-              client-ca-file = cfg.clientCaFile;
+
+              inherit (cfg) bindAddress advertiseAddress clientCaFile;
+
               disable-admission-plugins = concatStringsSep "," cfg.disableAdmissionPlugins;
               enable-admission-plugins  = concatStringsSep "," cfg.enableAdmissionPlugins;
+
               etcd-servers = concatStringsSep "," cfg.etcd.servers;
-              etcd-cafile = cfg.etcd.caFile;
+              etcd-cafile   = cfg.etcd.caFile;
               etcd-certfile = cfg.etcd.certFile;
-              etcd-keyfile = cfg.etcd.keyFile;
+              etcd-keyfile  = cfg.etcd.keyFile;
+
               feature-gates = concatMapStringsSep "," (feature: "${feature}=true") cfg.featureGates;
-              basic-auth-file = cfg.basicAuthFile;
+
+              inherit (cfg) basicAuthFile;
+
               kubelet-https = boolToString cfg.kubeletHttps;
               kubelet-certificate-authority = cfg.kubeletClientCaFile;
               kubelet-client-certificate = cfg.kubeletClientCertFile;
               kubelet-client-key = cfg.kubeletClientKeyFile;
               kubelet-preferred-address-types = cfg.preferredAddressTypes;
-              proxy-client-cert-file = cfg.proxyClientCertFile;
-              proxy-client-key-file = cfg.proxyClientKeyFile;
-              insecure-bind-address = cfg.insecureBindAddress;
-              insecure-port = cfg.insecurePort;
-              runtime-config = cfg.runtimeConfig;
-              secure-port = cfg.securePort;
-              service-account-key-file = cfg.serviceAccountKeyFile;
-              service-cluster-ip-range = cfg.serviceClusterIpRange;
-              storage-backend = cfg.storageBackend;
-              tls-cert-file = cfg.tlsCertFile;
+
+              inherit (cfg)
+                proxyClientCertFile
+                proxyClientKeyFile
+                insecureBindAddress
+                insecurePort
+                runtimeConfig
+                securePort
+                serviceAccountKeyFile
+                serviceClusterIpRange
+                storageBackend
+                tlsCertFile
+              ;
+
               tls-private-key-file = cfg.tlsKeyFile;
-              token-auth-file = cfg.tokenAuthFile;
+
+              inherit (cfg) tokenAuthFile;
+
               v = cfg.verbosity;
+
             } cfg.extraOpts ];
             WorkingDirectory = top.dataDir;
             User = "kubernetes";
