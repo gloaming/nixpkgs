@@ -229,6 +229,9 @@ in {
       requires = lib.concatMap deviceUnit ifaces;
       wantedBy = [ "multi-user.target" ];
       stopIfChanged = false;
+      serviceConfig = {
+        ExecReload = "${pkgs.wpa_supplicant}/bin/wpa_cli reconfigure";
+      };
 
       path = [ pkgs.wpa_supplicant ];
 
